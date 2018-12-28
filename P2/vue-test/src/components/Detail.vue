@@ -1,27 +1,46 @@
 <template>
   <div>
     <h1 v-show="isLoading">
-      Cargando personajes ...
+      Cargando personaje ...
     </h1>
     <table v-show="!isLoading">
       <tr>
         <th>Nombre</th>
         <th>Casa</th>
-        <th>Detalle</th>
+        <th>Slug</th>
+        <th>Fue creado</th>
+        <th>Sexo</th>
+        <th>Ranking</th>
+
       </tr>
-      <tr v-for="character in characters">
+      <tr>
+
         <td>{{ character.name }}</td>
         <td>{{ character.house }}</td>
-        <td> <button @click="goToDetail(character._id)">Ver detalle</button> </td>
+        <td>{{ character.slug }}</td>
+        <td>{{ character.createdAt }}</td>
+
+        
+        <td v-if="character.male">Masculino</td>
+        <td v-else>Femenino</td>  
+        
+        <td>{{ character.pageRank }}</td>
       </tr>
     </table>
-    
+    <table v-show="!isLoading">
+      <tr>
+        <th>Nombre Libro</th>
+      </tr>
+      <tr v-for="book in character.books">
+        <td>{{ book }}</td>
+      </tr>
+    </table>
   </div>
 </template>
 
 
 <script>
-  import { listsAllCharacters } from '../services/got.service.js'
+  import { getACharacter } from '../services/got.service.js'
 
   export default {
     name: 'list-component',
@@ -31,7 +50,7 @@
      */
     data () {
       return {
-        characters: [],
+        character: {},
         isLoading: false
       }
     },
@@ -40,10 +59,11 @@
      * @description the create function is the first one to be execute when the component is being created (see vue js lifecycle).
      */
     created () {
-      this.isLoading = true
-      listsAllCharacters()
+        const id = this.$route.params.id;
+        getACharacter(id)
         .then(res => {
-          this.characters = res
+          console.log('resp ', res);
+          this.character = res.data
           this.isLoading = false
         })
     },
